@@ -1,0 +1,38 @@
+Multichar_Symbols +N +V +J +Sg +Pl +Presente +1P +2P +3P GUESS
+
+LEXICON Root
+
+Noun ;
+Verb ;
+Adjective ;
+
+LEXICON Noun
+
+GUESS Ninf;
+
+LEXICON Verb
+
+GUESS Vinf;
+
+LEXICON Adjective
+
+GUESS Jinf;
+
+LEXICON Ninf
+
++N+Sg:0  #;
++N+Pl:^s #;
+
+LEXICON Vinf
+
++V:0                    #;
++V+Presente+Sg+1P:^o    #;
++V+Presente+Sg+2P:^i    #;
++V+Presente+Sg+3P:^a    #;
++V+Presente+Pl+1P:^iamo #;
++V+Presente+Pl+2P:^ate  #;
++V+Presente+Pl+3P:^ano  #;
+
+LEXICON Jinf
+
++J:0     #;
