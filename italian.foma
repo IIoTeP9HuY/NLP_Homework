@@ -1,26 +1,57 @@
 define C [b|c|d|f|g|h|j|k|l|m|n|p|q|r|s|t|v|w|x|z];
 define V [a|e|i|o|u];
 
-define Stem [C^<3 V C^<3]+;
+define Stem [C^<3 V C^<3]^<10;
 
-define Lexicon Stem [
-                    ["+V"]:0                       |
-                    ["+V" "+Presente" "+Sg" "+1P" ["+1Conj" | "+2Conj" | "+3Conj"]]:["^" o]     |
-                    ["+V" "+Presente" "+Sg" "+2P" ["+1Conj" | "+2Conj" | "+3Conj"]]:["^" i]     |
-                    ["+V" "+Presente" "+Sg" "+3P" "+1Conj"]:["^" a]                             |
-                    ["+V" "+Presente" "+Sg" "+3P" ["+1Conj" | "+2Conj"]]:["^" e]                |
-                    ["+V" "+Presente" "+Pl" "+1P" ["+1Conj" | "+2Conj" | "+3Conj"]]:["^" iamo]  |
-                    ["+V" "+Presente" "+Pl" "+2P" "+1Conj"]:["^" ate]                           |
-                    ["+V" "+Presente" "+Pl" "+2P" "+2Conj"]:["^" ete]                           |
-                    ["+V" "+Presente" "+Pl" "+2P" "+3Conj"]:["^" ite]                           |
-                    ["+V" "+Presente" "+Pl" "+3P" ["+1Conj" | "+2Conj"]]:["^" ano]              |
-                    ["+V" "+Presente" "+Pl" "+3P" "+3Conj"]:["^" ono]]                          ;
+# Morpheme bound
+define MM %^;
+
+define ProcessInf 		[
+							["+V" "+Inf" "+1C"]:[a r e]						  |                       
+							["+V" "+Inf" "+2C"]:[e r e]                       |
+							["+V" "+Inf" "+3C"]:[i r e]                       
+						];
+
+define ProcessPresente 	[
+							["+V" "+Presente" "+Sg" "+1P" "+1C"]:[o]          |
+							["+V" "+Presente" "+Sg" "+1P" "+2C"]:[o]          |
+							["+V" "+Presente" "+Sg" "+1P" "+3C"]:[o]          |
+
+							["+V" "+Presente" "+Sg" "+2P" "+1C"]:[i]          |
+							["+V" "+Presente" "+Sg" "+2P" "+2C"]:[i]          |
+							["+V" "+Presente" "+Sg" "+2P" "+3C"]:[i]          |
+
+							["+V" "+Presente" "+Sg" "+3P" "+1C"]:[a]          |
+							["+V" "+Presente" "+Sg" "+3P" "+2C"]:[e]          |
+							["+V" "+Presente" "+Sg" "+3P" "+3C"]:[e]          |
+
+							["+V" "+Presente" "+Pl" "+1P" "+1C"]:[i a m o]    |
+							["+V" "+Presente" "+Pl" "+1P" "+2C"]:[i a m o]    |
+							["+V" "+Presente" "+Pl" "+1P" "+3C"]:[i a m o]    |
+
+							["+V" "+Presente" "+Pl" "+2P" "+1C"]:[a t e]      |
+							["+V" "+Presente" "+Pl" "+2P" "+2C"]:[e t e]      |
+							["+V" "+Presente" "+Pl" "+2P" "+3C"]:[i t e]      |
+
+							["+V" "+Presente" "+Pl" "+3P" "+1C"]:[a n o]      |
+							["+V" "+Presente" "+Pl" "+3P" "+2C"]:[o n o]      |
+							["+V" "+Presente" "+Pl" "+3P" "+3C"]:[o n o]      
+						];
+
+define ProcessVerb 	[
+						ProcessInf      	|
+						ProcessPresente 
+					];
 
 
+define GuessLexicon Stem [
+						ProcessVerb 
+					];
 
-define Cleanup "^" -> 0;
 
-define Grammar  Lexicon .o.
+define Cleanup MM -> 0;
+
+define Grammar  GuessLexicon .o.
                 Cleanup;
 
 regex Grammar;
