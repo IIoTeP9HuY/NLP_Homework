@@ -1,5 +1,13 @@
 #!/usr/bin/sh
 
-cat ./data/italian.txt.learn | awk -v OFS='\t' '{ print $1 }' > ./data/italian.txt.learn.dumb
-cat ./data/italian.txt.learn.dumb | flookup -x italian.bin > ./data/italian.txt.learn.predict
-./filter.py ./data/italian.txt.learn.predict > ./data/italian.txt.learn.prediction
+echo Building dumb data...
+cat ./data/italian.txt.learn | awk -v OFS='\t' '{ print $1 }' > ./data/italian.txt.learn.clean
+
+echo Building prediction...
+cat ./data/italian.txt.learn.clean | flookup italian.bin > ./data/italian.txt.learn.predict
+
+echo Filtering prediction...
+./filter.py <<< ./data/italian.txt.learn.predict > ./data/italian.txt.learn.prediction
+
+echo Evaluating...
+python2 ./data/evaluate.py ./data/italian.txt.learn ./data/italian.txt.learn.prediction
