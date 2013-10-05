@@ -55,3 +55,7 @@ define Grammar  GuessLexicon .o.
                 Cleanup;
 
 regex Grammar;
+
+save stack italian.bin
+
+quit;
