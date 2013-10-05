@@ -1,26 +1,139 @@
+# TODO
 define C [b|c|d|f|g|h|j|k|l|m|n|p|q|r|s|t|v|w|x|z];
 define V [a|e|i|o|u];
 
 define Stem [C^<3 V C^<3]+;
 
-define Lexicon Stem [
-                    ["+V"]:0                       |
-                    ["+V" "+Presente" "+Sg" "+1P" ["+1Conj" | "+2Conj" | "+3Conj"]]:["^" o]     |
-                    ["+V" "+Presente" "+Sg" "+2P" ["+1Conj" | "+2Conj" | "+3Conj"]]:["^" i]     |
-                    ["+V" "+Presente" "+Sg" "+3P" "+1Conj"]:["^" a]                             |
-                    ["+V" "+Presente" "+Sg" "+3P" ["+1Conj" | "+2Conj"]]:["^" e]                |
-                    ["+V" "+Presente" "+Pl" "+1P" ["+1Conj" | "+2Conj" | "+3Conj"]]:["^" iamo]  |
-                    ["+V" "+Presente" "+Pl" "+2P" "+1Conj"]:["^" ate]                           |
-                    ["+V" "+Presente" "+Pl" "+2P" "+2Conj"]:["^" ete]                           |
-                    ["+V" "+Presente" "+Pl" "+2P" "+3Conj"]:["^" ite]                           |
-                    ["+V" "+Presente" "+Pl" "+3P" ["+1Conj" | "+2Conj"]]:["^" ano]              |
-                    ["+V" "+Presente" "+Pl" "+3P" "+3Conj"]:["^" ono]]                          ;
+define VerbForm [%+Pres     | 
+                 %+Inf      |
+                 %+PasPros  | 
+                 %+Imp      |
+                 %+PasRem   |
+                 %+FutSim   | 
+                 %+CongPres |  
+                 %+CongImp  | 
+                 %+Imperativo];
 
+define Quantity [%+Pl | %+Sg];
 
+define Person [%+1P | %+2P | %+3P];
 
-define Cleanup "^" -> 0;
+define Conjunction [%+1C | %+2C | %+3C];
 
-define Grammar  Lexicon .o.
-                Cleanup;
+define Tag [VerbForm | Person | Quantity | Conjunction | %+V];
+
+define TagAppendix %+V VerbForm Conjunction [Quantity Person | 0];
+
+define Preprocess [C | V]* C TagAppendix;
+
+define ProcessConj %+1C -> %^ a ,
+                   %+2C -> %^ e ,
+                   %+3C -> %^ i ;
+
+define ProcessPerson %+Sg %+1P -> o  ,
+                     %+Sg %+2P -> i  ,
+                     %+Sg %+3P -> a  ,
+                     %+Pl %+1P -> m o ,
+                     %+Pl %+2P -> t e ,
+                     %+Pl %+3P -> n o ;
+
+define ProcessForm 
+                   %+Inf %^ a -> %^ a r e , 
+                   %+Inf %^ e -> %^ e r e ,
+                   %+Inf %^ i -> %^ i r e ,
+                  
+                   %+Pres %^ [ a o | e o | i o ]     -> %^ o       ,
+                   %+Pres %^ [ a i | e i | i i ]     -> %^ i       ,
+                   %+Pres %^ a a                     -> %^ a       ,
+                   %+Pres %^ [e a | i a]             -> %^ e       ,
+                   %+Pres %^ [a m o | e m o | i m o] -> %^ i a m o ,
+                   %+Pres %^ [e n o | i n o]         -> %^ o n o   ,
+
+                   %+PasPros %^ a -> %^ a t o ,
+                   # Here might be irregular words 
+                   %+PasPros %^ e -> %^ u t o ,
+                   %+PasPros %^ e -> %^ o     ,
+                   %+PasPros %^ e -> %^ s o   ,
+                   %+PasPros %^ e -> %^ s t o ,
+                   %+PasPros %^ i -> %^ t t o ,
+
+                   %+Imp %^ a -> %^ a v ,
+                   %+Imp %^ e -> %^ e v ,
+                   %+Imp %^ i -> %^ i v ,,
+                   %+Imp %^ a -> %^ a v a || _ C ,,
+                   %+Imp %^ e -> %^ e v a || _ C ,,
+                   %+Imp %^ i -> %^ i v a || _ C ,,
+
+                   %+PasRem %^ a o   -> %^ a i         ,
+                   %+PasRem %^ e o   -> %^ e i         ,
+                   %+PasRem %^ e o   -> %^ e t i       ,
+                   %+PasRem %^ i o   -> %^ i i         ,
+                   %+PasRem %^ a i   -> %^ a s t i     ,
+                   %+PasRem %^ e i   -> %^ e s t i     ,
+                   %+PasRem %^ i i   -> %^ i s t i     ,
+                   %+PasRem %^ i a   -> %^ ì           , 
+                   %+PasRem %^ a a   -> %^ ò           ,
+                   %+PasRem %^ e a   -> %^ é           ,
+                   %+PasRem %^ e a   -> %^ ette        ,
+                   %+PasRem %^ a m   -> %^ a m m       ,
+                   %+PasRem %^ e m   -> %^ e m m       ,
+                   %+PasRem %^ i m   -> %^ i m m       ,
+                   %+PasRem %^ a t   -> %^ a s t       ,
+                   %+PasRem %^ e t   -> %^ e s t       ,
+                   %+PasRem %^ i t   -> %^ i s t       ,
+                   %+PasRem %^ a n   -> %^ a r o n     ,  
+                   %+PasRem %^ e n o -> %^ e t t e r o ,  
+                   %+PasRem %^ e n   -> %^ e r o n     ,  
+                   %+PasRem %^ i n   -> %^ i r o n     ,
+
+                   %+FutSim %^ [a | e | i] o   -> %^ ò       ,
+                   %+FutSim %^ [a | e | i] i   -> %^ a i     ,
+                   %+FutSim %^ [a | e | i] a   -> %^ à       ,
+                   %+FutSim %^ [a | e | i] m o -> %^ e m o   ,
+                   %+FutSim %^ [a | e | i] t e -> %^ e t e   ,
+                   %+FutSim %^ [a | e | i] n o -> %^ a n n o ,
+ 
+                   %+CongPres %^ [a | e | i] o   -> %^ e i         ,
+                   %+CongPres %^ [a | e | i] i   -> %^ e s t i     ,
+                   %+CongPres %^ [a | e | i] a   -> %^ e b b e     ,
+                   %+CongPres %^ [a | e | i] m o -> %^ e m m o     ,
+                   %+CongPres %^ [a | e | i] t e -> %^ e s t e     ,
+                   %+CongPres %^ [a | e | i] n o -> %^ e b b e r o ,
+
+                   %+CongImp %^ a [ o | e ]  -> %^ a s s i     ,
+                   %+CongImp %^ e [ o | e ]  -> %^ e s s i     ,
+                   %+CongImp %^ i [ o | e ]  -> %^ i s s i     ,
+                   %+CongImp %^ a i          -> %^ a s s e     ,
+                   %+CongImp %^ e i          -> %^ e s s e     ,
+                   %+CongImp %^ i i          -> %^ i s s e     ,
+                   %+CongImp %^ a m o        -> %^ a s s i m o ,
+                   %+CongImp %^ e m o        -> %^ e s s i m o ,
+                   %+CongImp %^ i m o        -> %^ i s s i m o ,
+                   %+CongImp %^ a t e        -> %^ a s t e     ,
+                   %+CongImp %^ e t e        -> %^ e s t e     ,
+                   %+CongImp %^ i t e        -> %^ i s t e     , 
+                   %+CongImp %^ a n o        -> %^ a s s e r o ,
+                   %+CongImp %^ e n o        -> %^ e s s e r o ,
+                   %+CongImp %^ i n o        -> %^ i s s e r o ,
+
+                   %+Imperativo %^ a e             -> %^ a,
+                   %+Imperativo %^ [e | i] e       -> %^ i,
+                   %+Imperativo %^ a i             -> %^ i,
+                   %+Imperativo %^ [e | i] i       -> %^ a,
+                   %+Imperativo %^ [a | e | i] m o -> %^ i a m o;
+    
+ 
+define CleanupForm %+V    -> 0 ,
+                   %+Inf  -> 0 ,
+                   %+Pres -> 0 ;
+    
+define Cleanup %^ -> 0;
+
+define Grammar Preprocess    .o.
+               ProcessPerson .o.
+               ProcessConj   .o.
+               ProcessForm   .o.
+               CleanupForm   .o.
+               Cleanup         ;
 
 regex Grammar;
