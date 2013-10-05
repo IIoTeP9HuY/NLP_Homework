@@ -1,5 +1,5 @@
 define C [b|c|d|f|g|h|j|k|l|m|n|p|q|r|s|t|v|w|x|z];
-define V [a|e|i|o|u];
+define V [a|e|i|o|u|ù];
 
 define Stem [C^<3 V C^<3]^<10;
 
@@ -58,4 +58,4 @@ regex Grammar;
 
 save stack italian.bin
 
-quit;
+#quit;
