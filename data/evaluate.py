@@ -21,6 +21,8 @@ def matched_articles(pair_of_articles):
 def evaluate(canonical_iterable, user_iterable):
     iterable = itertools.izip(canonical_iterable, user_iterable)
     result = []
+    canonicalTotalPOSes = dict()
+    userTotalPOSes = dict()
 
     for item in read(matched_articles, iterable):
         wordform, canonical_lemmas, wordform, user_lemmas = item
@@ -35,17 +37,34 @@ def evaluate(canonical_iterable, user_iterable):
         else:
             recall = float(len(canonical_lemmas & user_lemmas)) / float(len(canonical_lemmas))
 
+        for lemma in user_lemmas:
+            if lemma in canonical_lemmas:
+                lemma = lemma.split('+')[1]
+                userTotalPOSes[lemma] = userTotalPOSes.get(lemma, 0) + 1
+
+        for lemma in canonical_lemmas:
+            lemma = lemma.split('+')[1]
+            canonicalTotalPOSes[lemma] = canonicalTotalPOSes.get(lemma, 0) + 1
+
         result.append({ 'precision' : precision, 'recall' : recall })
 
     EP = mean(select('precision', result))
     ER = mean(select('recall', result))
     EF = 2.0 * EP * ER / (EP + ER)
 
+
     result = { '_expected' : {
         'precision' : EP,
         'recall' : ER,
         'f1' : EF
     }}
+
+    print('Canonical: ', canonicalTotalPOSes)
+    print('     User: ', userTotalPOSes)
+    # for lemma in ['N', 'V', 'A']:
+    #     print lemma
+        # print(userTotalPOSes[lemma])
+        # posResult[lemma] = float(userTotalPOSes[lemma]) / canonicalTotalPOSes[lemma]
 
     return result
 
