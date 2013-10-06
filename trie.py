@@ -9,11 +9,12 @@ with open('data/italian.txt.learn', 'r') as test:
       
       for x in test:
         for y in train:
+          if bool(x[-2:] == '+V') and bool(y[-2:] == '+V'): continue
           for i in xrange(min(len(x), len(y), len(source))):
             if x[i] != y[i] or x[i] != source[i]:
-              suffix_from = source[i -  1:]
-              suffix_my    = y[i - 1:]
-              suffix_to = x[i - 1:]
+              suffix_from = source[i -  2:]
+              suffix_my    = y[i - 2:]
+              suffix_to = x[i - 2:]
           
               suffixes.setdefault(suffix_from, {}).setdefault((suffix_to, suffix_my), 0)
               suffixes[suffix_from][(suffix_to, suffix_my)] += 1
@@ -21,7 +22,7 @@ with open('data/italian.txt.learn', 'r') as test:
 
     for suffix, typeCounts in suffixes.iteritems():
       for (x, y), z in typeCounts.iteritems():
-        if x != y and z > 500:
+        if x != y and z > 20:
           print z, suffix, typeCounts
           print
           break
