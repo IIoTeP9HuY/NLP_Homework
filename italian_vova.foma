@@ -2,6 +2,8 @@
 define C [b|c|d|f|g|h|j|k|l|m|n|p|q|r|s|t|v|w|x|z];
 define V [a|à|e|i|è|é|o|ò|ó|u|ù|ú|i|ì|í|î];
 
+define Stem [C^<3 V C^<3]+;
+
 define VerbForm [%+Pres     | 
                  %+Inf      |
                  %+PasPros  | 
