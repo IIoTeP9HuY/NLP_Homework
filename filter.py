@@ -39,13 +39,14 @@ for line in inputFile:
 
     # Predictinf vp and modifying if necessary
     vp = getVerbPrediction(verbPredictions)
+    if sourceWord[-2:] in ['an', 'ar']:       vp = sourceWord[:-2] + 'are+V'
+    if sourceWord[-3:] in ['ata', 'ati']:     vp = sourceWord[:-3] + 'are+V'
+    if sourceWord[-4:] in ['rono']:           vp = sourceWord[:-4] + 're+V'
+    if sourceWord[-4:] in ['ebbe']:           vp = sourceWord[:-4] + 'e+V'
+    if sourceWord[-4:] in ['avan', 'ando']:   vp = sourceWord[:-4] + 'are+V'
     if sourceWord[-5:] in ['avamo', 'asser']: vp = sourceWord[:-5] + 'are+V'
-    if sourceWord[-5:] == 'ssimo': vp = sourceWord[:-5] + 're+V'
-    if sourceWord[-5:] == 'ebber': vp = sourceWord[:-5] + 'e+V'
-    if sourceWord[-4:] == 'rono':  vp = sourceWord[:-4] + 're+V'
-    if sourceWord[-4:] == 'ebbe':  vp = sourceWord[:-4] + 'e+V'
-    if sourceWord[-3:] in ['ata', 'ati']:  vp = sourceWord[:-3] + 'are+V'
-    if sourceWord[-2:] in ['an', 'ar']:    vp = sourceWord[:-2] + 'are+V'
+    if sourceWord[-5:] == 'ssimo':            vp = sourceWord[:-5] + 're+V'
+    if sourceWord[-5:] == 'ebber':            vp = sourceWord[:-5] + 'e+V'
     
     # Predicting Noun
     np = getNounPrediction(nounPredictions)
@@ -62,30 +63,20 @@ for line in inputFile:
       ap = None
 
 
-    # Modifying knowing all predictions
     if np != None and sourceWord[-4:] == 'rono' and np[-6:] == 'rono+N':
       vp = np[:-6] + 're+V'
       np = None
-    #if np != None and sourceWord[-6:] == 'assimo' and np[-8:] == 'assimo+N':
-    #      vp = sourceWord[-6:] + 'are+V'
-    #      np = None
-
     if np != None and sourceWord[-2:] == 're' and np[-4:] == 'ra+N':
       vp = np[:-4] + 're+V'
       np = None
 
 
+    if sourceWord[-4:] in ['anti', 'ante']:
+      ap = sourceWord[-4:] + 'are+A'
+      vp = None
     if ap != None and ap[-5:] == 'roo+A':
       vp = ap[:-5] + 're+V'
       ap = None
-#if ap != None and sourceWord[-5:] == 'asser' and ap[-7:] == 'asseo+A':
-#      vp = ap[:-5] + 'are+V'
-#      ap = None
-
-#if np != None and np[-6:] == 'rono+N':
-#      vp = np[:-6] + 're+V'
-
-
 
     answer = sourceWord
     for w in [vp, np, ap]:
@@ -93,13 +84,6 @@ for line in inputFile:
         answer += '\t' + w
 
     print answer
-  
-    #nounPredictions = plausibleVerbPredictions(nounPredictions)
-    #adjPredictions  = plausibleVerbPredictions(adjPredictions)
-    #if sourceWord[-9:] == 'nerebbero': vp = sourceWord[:-9] + 'nare+V'
-    
-    #elif sourceWord[-4:] == 'ammo': vp = sourceWord[:-4] + 'are+V'
-    #elif sourceWord[-4:] == 'sser': vp = sourceWord[:-4] + 're+V'
 
     verbPredictions = []
     adjPredictions  = []

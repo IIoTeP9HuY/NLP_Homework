@@ -21,7 +21,8 @@ with open('data/italian.txt.learn', 'r') as test:
 
     for suffix, typeCounts in suffixes.iteritems():
       for (x, y), z in typeCounts.iteritems():
-        if x != y and z > 1945:
+        if x != y and z > 500:
           print z, suffix, typeCounts
+          print
           break
 
